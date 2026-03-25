@@ -103,6 +103,6 @@ Detailed guides are available in the [docs/](docs/) folder:
 
 ## ⚙️ Hardware Recommendations
 Developed and tested on:
-- **GPU**: NVIDIA GeForce RTX 5060 Ti (8GB VRAM)
+- **GPU**: NVIDIA GeForce RTX 5060 Ti (16GB VRAM)
 - **CPU**: AMD Ryzen 7 7700
 - **RAM**: 32GB
