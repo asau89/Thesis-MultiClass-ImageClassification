@@ -1,6 +1,6 @@
 # Parasite Egg Image Classification (ConvNeXt-Base)
 
-An academic-grade image classification system for parasite egg detection, developed for thesis research. This project uses the **ConvNeXt-Base** architecture (384x384 resolution) to classify three types of parasite eggs with high precision and explainability.
+An academic-grade image classification system for parasite egg detection, developed for academic project. This project uses the **ConvNeXt-Base** architecture (384x384 resolution) to classify three types of parasite eggs with high precision and explainability.
 
 1. `Ascaris_lumbricoides`
 2. `Hookworm`
