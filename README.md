@@ -1,95 +1,106 @@
 # Parasite Egg Image Classification (ConvNeXt-Base)
 
-An academic-grade image classification system for parasite egg detection, developed for thesis research. This project uses the **ConvNeXt-Base** architecture (384x384 resolution) to classify three types of parasite eggs:
+An academic-grade image classification system for parasite egg detection, developed for thesis research. This project uses the **ConvNeXt-Base** architecture (384x384 resolution) to classify three types of parasite eggs with high precision and explainability.
+
 1. `Ascaris_lumbricoides`
 2. `Hookworm`
 3. `Trichuris_trichiura`
 
-## 🚀 Features
-- **Modern Architecture**: Leverages `convnext_base` (pre-trained on ImageNet) with `torch.compile` for speed.
-- **Academic Analysis**: Built-in tools for ROC/AUC curves, t-SNE feature visualization, and computational cost reporting.
-- **Robust Training**: 5-seed multi-run support for statistical significance (`mean ± std`).
-- **Phased Tuning**: 8-phase hyperparameter tuning strategy (Learning Rate, Batch Size, Weight Decay, Dropout, Focal Loss, Class Weights, Differential LR, etc.).
-- **Inference Pipeline**: Batch and single-image inference with visual grid outputs.
+---
+
+## ✨ New: Interactive Web UI & Batch Processing
+The project now includes a modern, dark-themed **Web Interface** for real-time inference and model explainability.
+
+- **Batch Upload**: Process multiple microscopy images simultaneously.
+- **Grad-CAM Visualization**: Real-time attention heatmaps showing exactly where the model is "looking" to make its prediction.
+- **Results Gallery**: Browse through processed samples and click to see detailed probability distributions and heatmaps.
+- **Docker Ready**: Deploy the entire system with a single command.
 
 ---
 
-## 🛠️ Installation
+## 🚀 Core Features
+- **Modern Architecture**: Leverages `convnext_base` (pre-trained on ImageNet) with `torch.compile` for optimized GPU performance.
+- **Explainable AI (XAI)**: Integrated Grad-CAM visualization for verifying model focus on relevant biological features.
+- **Academic Analysis**: Built-in tools for ROC/AUC curves, t-SNE feature visualization, and computational cost reporting.
+- **Multi-Seed Testing**: 5-seed training support for statistical significance (`mean ± std`).
+- **Phased Tuning**: 8-phase hyperparameter tuning strategy for maximum accuracy.
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/asau89/Thesis-MultiClass-ImageClassification.git
-   cd Thesis-MultiClass-ImageClassification
-   ```
+---
 
-2. **Install PyTorch (CUDA 12.4 recommended)**:
-   ```bash
-   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
-   ```
+## 🛠️ Installation & Setup
 
-3. **Install other dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+### 1. Local Setup
+```bash
+# Clone the repository
+git clone https://github.com/asau89/Thesis-MultiClass-ImageClassification.git
+cd Thesis-MultiClass-ImageClassification
+
+# Install PyTorch (CUDA 12.4 recommended for RTX 5060 Ti)
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### 2. Run the Web UI
+```bash
+python app.py
+```
+Visit `http://localhost:5000` in your browser.
+
+### 3. Run with Docker (Recommended for Deployment)
+```bash
+docker-compose up --build
+```
+*Note: Ensure your `outputs/best_model.pth` is present as it is mounted into the container.*
 
 ---
 
 ## 📂 Project Structure
 
-- `dataset.py`: Custom PyTorch `Dataset` and `DataLoader` with constrained augmentations (rotation/shearing).
-- `model.py`: `ConvNeXtClassifier` wrapper with support for differential learning rates.
+- `app.py`: Flask backend for the interactive Web UI.
+- `templates/`: Modern frontend with batch processing and gallery views.
+- `visualize_cam.py`: Core logic for Grad-CAM (Gradient-weighted Class Activation Mapping).
 - `train.py`: Primary training script (supports single and multi-seed runs).
 - `evaluate.py`: Standard test-set evaluation (Accuracy, F1, Confusion Matrix).
 - `analysis.py`: Academic research tools (ROC, t-SNE, Cost Analysis).
-- `tune.py` & `compare_results.py`: Hyperparameter tuning pipeline.
-- `inference.py`: User-friendly script for classifying unseen images.
-- `config.py`: Centralized configuration for all hyperparameters and paths.
-- `docs/`: Detailed documentation for every phase of the project.
+- `model.py`: `ConvNeXtClassifier` wrapper with differential learning rate support.
+- `config.py`: Centralized configuration for hyperparameters and paths.
+- `Dockerfile` & `docker-compose.yml`: Containerization for easy setup and scaling.
 
 ---
 
-## 🏃 Usage
+## 🏃 Academic Workflow
 
-### 1. Training
-For a standard single-run training:
+### 1. Training & Evaluation
 ```bash
+# Standard training
 python train.py
-```
-For academic reporting (5 seeds for statistical stability):
-```bash
-python train.py --seeds 42,123,456,789,1234
-```
 
-### 2. Evaluation
-Assess the model on the test set:
-```bash
+# Multi-seed reporting (statistical stability)
+python train.py --seeds 42,123,456,789,1234
+
+# Test-set evaluation
 python evaluate.py
 ```
 
-### 3. Academic Analysis
-Generate research-quality plots and reports:
+### 2. Research Analysis
+Generate plots and reports for your thesis:
 ```bash
 python analysis.py --all
 ```
-Outputs: `outputs/analysis/roc_curves.png`, `tsne_features.png`, `cost_report.txt`.
+Outputs saved to `outputs/analysis/`: ROC curves, t-SNE embeddings, and FLOPs/Speed reports.
 
-### 4. Hyperparameter Tuning
-Follow the phased strategy:
+### 3. Hyperparameter Tuning
 ```bash
-python tune.py --phase 1  # (Run phases 1-8 sequentially)
-python compare_results.py  # Analyze and find the best config
-```
-
-### 5. Inference
-Test the model on new, unseen images:
-```bash
-python inference.py --folder path/to/unseen_images/
+python tune.py --phase 1  # 8 phases available
+python compare_results.py  # Analyze and select best config
 ```
 
 ---
 
 ## 📊 Documentation
-Detailed guides are available in the [docs/](docs/) folder:
+Detailed guides for every project phase:
 0. [Overview](docs/00_overview.md)
 1. [Dataset Setup](docs/01_dataset_setup.md)
 2. [Model Architecture](docs/02_model_architecture.md)
@@ -103,6 +114,6 @@ Detailed guides are available in the [docs/](docs/) folder:
 
 ## ⚙️ Hardware Recommendations
 Developed and tested on:
-- **GPU**: NVIDIA GeForce RTX 5060 Ti (8GB VRAM)
+- **GPU**: NVIDIA GeForce RTX 5060 Ti (8GB/16GB VRAM)
 - **CPU**: AMD Ryzen 7 7700
 - **RAM**: 32GB

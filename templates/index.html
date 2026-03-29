@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parasite Egg Classifier | Thesis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4C72B0;
+            --secondary: #DD8452;
+            --accent: #55A868;
+            --background: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 10% 20%, rgba(76, 114, 176, 0.15) 0%, transparent 40%),
+                              radial-gradient(circle at 90% 80%, rgba(221, 132, 82, 0.1) 0%, transparent 40%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #60a5fa, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .main-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            background: rgba(15, 23, 42, 0.2);
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(76, 114, 176, 0.05);
+        }
+
+        .upload-area.dragging {
+            border-color: var(--accent);
+            background: rgba(85, 168, 104, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .upload-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        /* Progress Bar Section */
+        #batchProgressSection {
+            display: none;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .progress-bar-container {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Results Gallery */
+        #gallerySection {
+            display: none;
+            margin-top: 3rem;
+        }
+
+        .gallery-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .results-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .gallery-card {
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            position: relative;
+        }
+
+        .gallery-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .gallery-card.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(85, 168, 104, 0.3);
+        }
+
+        .gallery-thumb {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .gallery-info {
+            padding: 0.75rem;
+        }
+
+        .gallery-class {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .gallery-conf {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Detailed Results View */
+        #detailSection {
+            display: none;
+            margin-top: 3rem;
+            padding-top: 3rem;
+            border-top: 1px solid var(--border);
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .detail-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .result-image-card {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .result-image-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .image-caption {
+            padding: 0.75rem;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--text-muted);
+        }
+
+        .prediction-summary {
+            background: rgba(76, 114, 176, 0.1);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border-left: 4px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .prediction-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .prediction-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .confidence-badge {
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 700;
+        }
+
+        .prob-bars {
+            margin-top: 2rem;
+        }
+
+        .prob-item {
+            margin-bottom: 1rem;
+        }
+
+        .prob-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .prob-bar-container {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .prob-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.8s ease-out;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .loading-ring {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Parasite Egg Classifier</h1>
+            <p class="subtitle">Batch Processing & Attention Visualization</p>
+        </header>
+
+        <main class="main-card">
+            <div class="upload-area" id="dropZone">
+                <span class="upload-icon">🔬</span>
+                <div class="upload-text">Click to browse or drop images</div>
+                <div class="upload-hint">Supports batch upload of multiple chromatography images</div>
+                <input type="file" id="fileInput" accept="image/*" multiple>
+            </div>
+
+            <div id="batchProgressSection">
+                <div class="progress-header">
+                    <span id="progressStatus">Processing batch...</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="batchProgressBar"></div>
+                </div>
+            </div>
+
+            <div id="gallerySection">
+                <h2 class="gallery-title">Results Gallery <span id="galleryCount" style="color: var(--text-muted); font-size: 1rem; font-weight: 400;"></span></h2>
+                <div class="results-gallery" id="imageGallery">
+                    <!-- Cards will be injected here -->
+                </div>
+            </div>
+
+            <div id="detailSection">
+                <div class="detail-header">
+                    <h2 class="detail-title">Sample Details: <span id="currentFileName" style="color: var(--primary);">--</span></h2>
+                    <button id="closeDetail" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.5rem;">&times;</button>
+                </div>
+
+                <div class="prediction-summary">
+                    <div>
+                        <div class="prediction-label">Identified Parasite</div>
+                        <div class="prediction-value" id="predClass">---</div>
+                    </div>
+                    <div class="confidence-badge" id="predConf">0%</div>
+                </div>
+
+                <div class="results-grid">
+                    <div class="result-image-card">
+                        <img id="origImgPreview" src="" alt="Original View">
+                        <div class="image-caption">Microscopy Raw View</div>
+                    </div>
+                    <div class="result-image-card">
+                        <img id="camImgPreview" src="" alt="Grad-CAM View">
+                        <div class="image-caption">Grad-CAM Attention Heatmap</div>
+                    </div>
+                </div>
+
+                <div class="prob-bars" id="probContainer">
+                    <!-- Progress bars will be injected here -->
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            &copy; 2026 Parasite Image Classification Thesis Project
+        </footer>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const batchProgressSection = document.getElementById('batchProgressSection');
+        const gallerySection = document.getElementById('gallerySection');
+        const detailSection = document.getElementById('detailSection');
+        const imageGallery = document.getElementById('imageGallery');
+        
+        const colors = ['#4C72B0', '#DD8452', '#55A868'];
+        let batchResults = [];
+
+        // Interaction
+        dropZone.addEventListener('click', () => fileInput.click());
+        
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragging'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragging'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragging');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+        async function handleFiles(files) {
+            if (files.length === 0) return;
+            
+            // Reset batch display
+            batchProgressSection.style.display = 'block';
+            gallerySection.style.display = 'block';
+            imageGallery.innerHTML = '';
+            batchResults = [];
+            hideDetail();
+            
+            const total = files.length;
+            const progressBar = document.getElementById('batchProgressBar');
+            const statusText = document.getElementById('progressStatus');
+            const percentText = document.getElementById('progressPercent');
+            
+            for (let i = 0; i < total; i++) {
+                const file = files[i];
+                statusText.innerHTML = `<span class="loading-ring"></span> Processing ${i + 1} of ${total}: ${file.name}`;
+                
+                const result = await uploadFile(file);
+                if (result) {
+                    result.fileName = file.name;
+                    batchResults.push(result);
+                    addGalleryCard(result, i);
+                }
+                
+                const pct = Math.round(((i + 1) / total) * 100);
+                progressBar.style.width = pct + '%';
+                percentText.textContent = pct + '%';
+            }
+            
+            statusText.textContent = `Batch processing complete. ${batchResults.length} images analyzed.`;
+            document.getElementById('galleryCount').textContent = `(${batchResults.length} items)`;
+        }
+
+        async function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                return await response.json();
+            } catch (err) {
+                console.error(err);
+                return null;
+            }
+        }
+
+        function addGalleryCard(data, index) {
+            const card = document.createElement('div');
+            card.className = 'gallery-card';
+            card.onclick = () => showDetail(index);
+            
+            card.innerHTML = `
+                <img class="gallery-thumb" src="data:image/jpeg;base64,${data.original_image}" alt="">
+                <div class="gallery-info">
+                    <div class="gallery-class">${data.predicted_class}</div>
+                    <div class="gallery-conf">${data.confidence}% confidence</div>
+                </div>
+            `;
+            imageGallery.appendChild(card);
+            
+            // Auto show first result when it arrives
+            if (index === 0) showDetail(0);
+        }
+
+        function showDetail(index) {
+            const data = batchResults[index];
+            if (!data) return;
+
+            // Highlight in gallery
+            const cards = document.querySelectorAll('.gallery-card');
+            cards.forEach((c, i) => c.classList.toggle('active', i === index));
+
+            detailSection.style.display = 'block';
+            document.getElementById('currentFileName').textContent = data.fileName;
+            document.getElementById('predClass').textContent = data.predicted_class;
+            document.getElementById('predConf').textContent = data.confidence + '%';
+            document.getElementById('origImgPreview').src = 'data:image/jpeg;base64,' + data.original_image;
+            document.getElementById('camImgPreview').src = 'data:image/jpeg;base64,' + data.cam_overlay;
+
+            // Render probability bars
+            const probContainer = document.getElementById('probContainer');
+            probContainer.innerHTML = '<h3 style="margin-bottom: 1rem; font-size: 1.1rem;">Probability Distribution</h3>';
+            
+            let colorIdx = 0;
+            for (const [cls, prob] of Object.entries(data.probabilities)) {
+                const color = colors[colorIdx % colors.length];
+                const item = document.createElement('div');
+                item.className = 'prob-item';
+                item.innerHTML = `
+                    <div class="prob-header">
+                        <span>${cls}</span>
+                        <span>${prob.toFixed(2)}%</span>
+                    </div>
+                    <div class="prob-bar-container">
+                        <div class="prob-bar-fill" style="width: 0%; background-color: ${color}"></div>
+                    </div>
+                `;
+                probContainer.appendChild(item);
+                setTimeout(() => item.querySelector('.prob-bar-fill').style.width = prob + '%', 50);
+                colorIdx++;
+            }
+            
+            detailSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function hideDetail() {
+            detailSection.style.display = 'none';
+        }
+
+        document.getElementById('closeDetail').onclick = hideDetail;
+    </script>
+</body>
+</html>

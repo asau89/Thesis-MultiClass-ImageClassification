@@ -22,6 +22,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
+from tqdm.auto import tqdm
 from config import Config
 from dataset import get_dataloaders
 from model import get_model
@@ -47,7 +48,8 @@ def run_epoch(
 
     ctx = torch.enable_grad() if is_train else torch.no_grad()
     with ctx:
-        for images, labels in loader:
+        pbar = tqdm(loader, desc=f"{'Train' if is_train else 'Val'}", leave=False)
+        for images, labels in pbar:
             images = images.to(device, non_blocking=True)
             labels = labels.to(device, non_blocking=True)
 
@@ -67,6 +69,11 @@ def run_epoch(
             preds = outputs.argmax(dim=1)
             correct += (preds == labels).sum().item()
             total += images.size(0)
+
+            # Update progress bar
+            avg_loss = total_loss / total
+            avg_acc  = 100.0 * correct / total
+            pbar.set_postfix(loss=f"{avg_loss:.4f}", acc=f"{avg_acc:.2f}%")
 
     return total_loss / total, 100.0 * correct / total
 

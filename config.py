@@ -38,6 +38,7 @@ class Config:
 
     # Mixed precision (AMP) — big speed boost on RTX 5060 Ti
     use_amp: bool = True
+    use_compile: bool = False  # torch.compile() is unstable on Windows
 
     # ── Regularization ───────────────────────────────────────────────────────
     dropout: float = 0.3

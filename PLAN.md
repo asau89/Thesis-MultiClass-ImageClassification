@@ -39,10 +39,6 @@ Val and test sets: resize + center crop + normalize only (no augmentation).
 
 ```
 Thesis-MultiClass-Image-Classification/
-├── dataset/
-│   ├── train/{Ascaris_lumbricoides, Hookworm, Trichuris_trichiura}/
-│   ├── val/  {Ascaris_lumbricoides, Hookworm, Trichuris_trichiura}/
-│   └── test/ {Ascaris_lumbricoides, Hookworm, Trichuris_trichiura}/
 ├── train_set.txt
 ├── val_set.txt
 ├── test_set.txt
@@ -51,6 +47,12 @@ Thesis-MultiClass-Image-Classification/
 ├── model.py            # ConvNeXt model builder
 ├── train.py            # Training loop (GPU-accelerated)
 ├── evaluate.py         # Test-set evaluation + confusion matrix
+├── visualize_cam.py    # Grad-CAM visualization logic
+├── app.py              # Flask Web UI backend
+├── templates/
+│   └── index.html      # Web UI frontend
+├── Dockerfile          # Docker image definition
+├── docker-compose.yml  # Docker service definition
 ├── utils.py            # EarlyStopping, plotting, seeding
 ├── requirements.txt
 ├── .gitignore
@@ -97,3 +99,21 @@ python -c "from dataset import get_dataloaders; from config import Config; t,v,t
 # Debug training (CPU)
 python train.py --debug
 ```
+
+## Web UI & Docker
+
+### 1. Run Web UI Locally
+```bash
+# Install additional requirements
+pip install flask gunicorn opencv-python-headless
+# Start server
+python app.py
+```
+Open `http://localhost:5000` in your browser.
+
+### 2. Run with Docker
+```bash
+# Build and start container
+docker-compose up --build
+```
+Ensure your `outputs/best_model.pth` exists as it is mounted into the container.

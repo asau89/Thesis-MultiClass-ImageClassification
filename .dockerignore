@@ -1,0 +1,30 @@
+# Git and IDE
+.git
+.gitignore
+.vscode
+.idea
+*.code-workspace
+
+# Python
+__pycache__
+*.py[cod]
+*.pyo
+*.egg-info
+.venv
+venv
+env
+
+# Dataset and Larger Files
+dataset/
+dataset_new/
+*.pth
+outputs/
+tuning_results/
+uploads/
+
+# Results/Logs
+*.png
+*.json
+*.csv
+*.txt
+!requirements.txt

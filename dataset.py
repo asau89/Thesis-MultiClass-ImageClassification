@@ -77,7 +77,7 @@ class ParasiteDataset(Dataset):
         if not manifest_path.exists():
             raise FileNotFoundError(f"Manifest not found: {manifest}")
 
-        with open(manifest_path, "r", encoding="utf-8") as f:
+        with open(manifest_path, "r", encoding="utf-8-sig") as f:
             for line in f:
                 rel_path = line.strip()
                 if not rel_path:

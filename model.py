@@ -71,11 +71,12 @@ def get_model(config: Config) -> ConvNeXtClassifier:
     model = model.to(config.device)
 
     # Enable torch.compile for extra speed on RTX 5060 Ti (PyTorch 2.0+)
-    try:
-        model = torch.compile(model)
-        print("[model] torch.compile() enabled — best GPU throughput")
-    except Exception:
-        print("[model] torch.compile() not available, skipping")
+    if config.use_compile and hasattr(torch, "compile"):
+        try:
+            model = torch.compile(model)
+            print("[model] torch.compile() enabled — best GPU throughput")
+        except Exception:
+            print("[model] torch.compile() not available, skipping")
 
     total_params   = sum(p.numel() for p in model.parameters())
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
