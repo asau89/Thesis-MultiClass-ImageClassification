@@ -114,6 +114,6 @@ Detailed guides for every project phase:
 
 ## ⚙️ Hardware Recommendations
 Developed and tested on:
-- **GPU**: NVIDIA GeForce RTX 5060 Ti (8GB/16GB VRAM)
+- **GPU**: NVIDIA GeForce RTX 5060 Ti (16GB VRAM)
 - **CPU**: AMD Ryzen 7 7700
 - **RAM**: 32GB
