@@ -9,10 +9,10 @@ from PIL import Image
 from flask import Flask, request, jsonify, render_template
 from werkzeug.utils import secure_filename
 
-from config import Config
-from model import get_model
-from dataset import build_transforms
-from visualize_cam import GradCAM
+from src.config import Config
+from src.model import get_model
+from src.dataset import build_transforms
+from src.visualize_cam import GradCAM
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'

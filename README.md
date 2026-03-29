@@ -22,29 +22,45 @@ The project now includes a modern, dark-themed **Web Interface** for real-time i
 - **Modern Architecture**: Leverages `convnext_base` (pre-trained on ImageNet) with `torch.compile` for optimized GPU performance.
 - **Explainable AI (XAI)**: Integrated Grad-CAM visualization for verifying model focus on relevant biological features.
 - **Academic Analysis**: Built-in tools for ROC/AUC curves, t-SNE feature visualization, and computational cost reporting.
-- **Multi-Seed Testing**: 5-seed training support for statistical significance (`mean ± std`).
-- **Phased Tuning**: 8-phase hyperparameter tuning strategy for maximum accuracy.
+- **Multi-Seed Testing**: 5-seed training
 
----
+## 📂 Project Structure
 
-## 🛠️ Installation & Setup
+```text
+Thesis-MultiClass-Image-Classification/
+├── data/               # Dataset manifests (train/val/test lists)
+├── src/                # Core logic (Config, Model, Dataset, Utils)
+├── scripts/            # Command-line tools (Train, Eval, Tune, Analysis)
+├── templates/          # Web UI HTML/CSS
+├── app.py              # Flask Backend
+├── Dockerfile          # Container configuration
+└── requirements.txt    # Python dependencies
+```
+
+## 🚀 Getting Started
 
 ### 1. Local Setup
 ```bash
-# Clone the repository
-git clone https://github.com/asau89/Thesis-MultiClass-ImageClassification.git
-cd Thesis-MultiClass-ImageClassification
-
-# Install PyTorch (CUDA 12.4 recommended for RTX 5060 Ti)
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
-
 # Install dependencies
 pip install -r requirements.txt
+
+# Start the Web UI
+python app.py
 ```
 
-### 2. Run the Web UI
+### 2. Scholarly Workflow (CLI)
 ```bash
-python app.py
+# Hyperparameter Tuning
+python scripts/tune.py --phase 1
+
+# Training
+python scripts/train.py
+
+# Evaluation
+python scripts/evaluate.py
+
+# Academic Analysis (ROC, t-SNE, Cost)
+python scripts/analysis.py --all
 ```
 Visit `http://localhost:5000` in your browser.
 

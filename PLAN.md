@@ -39,24 +39,32 @@ Val and test sets: resize + center crop + normalize only (no augmentation).
 
 ```
 Thesis-MultiClass-Image-Classification/
-├── train_set.txt
-├── val_set.txt
-├── test_set.txt
-├── config.py           # Centralized hyperparameters & paths
-├── dataset.py          # Custom Dataset + DataLoader factory
-├── model.py            # ConvNeXt model builder
-├── train.py            # Training loop (GPU-accelerated)
-├── evaluate.py         # Test-set evaluation + confusion matrix
-├── visualize_cam.py    # Grad-CAM visualization logic
-├── app.py              # Flask Web UI backend
+├── data/
+│   ├── train_set.txt
+│   ├── val_set.txt
+│   └── test_set.txt
+├── src/
+│   ├── __init__.py
+│   ├── config.py           # Centralized hyperparameters & paths
+│   ├── dataset.py          # Custom Dataset + DataLoader factory
+│   ├── model.py            # ConvNeXt model builder
+│   ├── utils.py            # EarlyStopping, plotting, seeding
+│   └── visualize_cam.py    # Grad-CAM visualization logic
+├── scripts/
+│   ├── train.py            # Training loop (GPU-accelerated)
+│   ├── evaluate.py         # Test-set evaluation + confusion matrix
+│   ├── analysis.py         # Academic research tools
+│   ├── inference.py        # CLI inference tool
+│   ├── tune.py             # Hyperparameter tuning
+│   └── compare_results.py  # Tuning comparison
 ├── templates/
-│   └── index.html      # Web UI frontend
-├── Dockerfile          # Docker image definition
-├── docker-compose.yml  # Docker service definition
-├── utils.py            # EarlyStopping, plotting, seeding
+│   └── index.html          # Web UI frontend
+├── app.py                  # Flask Web UI backend
+├── Dockerfile              # Docker image definition
+├── docker-compose.yml      # Docker service definition
 ├── requirements.txt
 ├── .gitignore
-└── PLAN.md             # This file
+└── README.md               # This file
 ```
 
 ## How to Run
